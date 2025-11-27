@@ -1,0 +1,36 @@
+const express = require("express");
+const mongoose = require("mongoose");
+const app = express();
+
+app.use(express.json());
+
+mongoose.connect("mongodb://127.0.0.1:27017/myStudents")
+.then(() => {
+    console.log("MongoDB connected..");
+})
+.catch((err) => {
+    console.log("Error while connecting:", err);
+});
+
+const studentSchema = new mongoose.Schema({
+    name: String,
+    age: Number,
+    course: String
+});
+
+const Student = mongoose.model("Student", studentSchema);
+
+app.post("/add", async (req, res) => {
+    const stu = new Student({
+        name : req.body.name,
+        age  : req.body.age,
+        course : req.body.course
+    });
+
+    await stu.save();
+    res.send("Student saved successfully");
+});
+
+app.listen(3000, () => {
+    console.log("Server running on port 3000");
+});
